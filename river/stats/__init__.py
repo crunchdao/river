@@ -27,6 +27,7 @@ from .shift import Shift
 from .skew import Skew
 from .summing import Sum
 from .var import Var
+from .fewmean import FEWMean
 
 __all__ = [
     "base",
@@ -37,6 +38,7 @@ __all__ = [
     "Cov",
     "Entropy",
     "EWMean",
+    "FEWMean",
     "EWVar",
     "IQR",
     "KolmogorovSmirnov",

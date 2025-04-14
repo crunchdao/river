@@ -79,6 +79,70 @@ impl RsEWMean {
 }
 
 #[derive(Serialize, Deserialize)]
+pub struct RsFEWMean {
+    fading_factor: f64,
+    ewa: Option<f64>,
+    weight_sum: f64,
+}
+
+impl RsFEWMean {
+    pub fn new(fading_factor: f64) -> Self {
+        Self {
+            fading_factor,
+            ewa: None,
+            weight_sum: 0.0,
+        }
+    }
+
+    pub fn update(&mut self, x: f64) {
+        match self.ewa {
+            None => {
+                self.ewa = Some(x);
+                self.weight_sum = 1.0;
+            }
+            Some(current_ewa) => {
+                let weight = (1.0 - self.fading_factor) * self.weight_sum;
+                let new_ewa = (weight * current_ewa + x) / (weight + 1.0);
+                self.ewa = Some(new_ewa);
+                self.weight_sum = weight + 1.0;
+            }
+        }
+    }
+
+    pub fn tick(&mut self, x: f64) {
+        self.update(x);
+    }
+
+    pub fn get(&self) -> f64 {
+        self.ewa.unwrap_or(0.0)
+    }
+
+    pub fn to_dict(&self) -> RsFEWMeanSerialized {
+        RsFEWMeanSerialized {
+            fading_factor: self.fading_factor,
+            ewa: self.ewa,
+            weight_sum: self.weight_sum,
+        }
+    }
+
+    pub fn from_dict(data: RsFEWMeanSerialized) -> Self {
+        Self {
+            fading_factor: data.fading_factor,
+            ewa: data.ewa,
+            weight_sum: data.weight_sum,
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct RsFEWMeanSerialized {
+    fading_factor: f64,
+    ewa: Option<f64>,
+    weight_sum: f64,
+}
+
+
+#[derive(Serialize, Deserialize)]
 #[pyclass(module = "river.stats._rust_stats")]
 pub struct RsEWVar {
     ewvar: EWVariance<f64>,
@@ -111,6 +175,8 @@ impl RsEWVar {
         Ok((self.alpha,))
     }
 }
+
+
 
 #[derive(Serialize, Deserialize)]
 #[pyclass(module = "river.stats._rust_stats")]
