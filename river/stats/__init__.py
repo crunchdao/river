@@ -9,6 +9,7 @@ from .cov import Cov
 from .entropy import Entropy
 from .ewmean import EWMean
 from .ewvar import EWVar
+from .fewvar import FEWVar
 from .iqr import IQR, RollingIQR
 from .kolmogorov_smirnov import KolmogorovSmirnov
 from .kurtosis import Kurtosis
@@ -63,4 +64,5 @@ __all__ = [
     "Skew",
     "Sum",
     "Var",
+    "FEWVar",
 ]
